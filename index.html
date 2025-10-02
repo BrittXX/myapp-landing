@@ -4,10 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MyApp Landing</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body style="font-family: Arial, sans-serif; text-align:center; margin-top:50px;">
-  <h1>🚀 MyApp'e Hoş Geldin</h1>
-  <p>Hayatını kolaylaştıran akıllı asistan uygulaması.</p>
-  <a href="#" style="display:inline-block; margin-top:20px; padding:10px 20px; background:#0078d7; color:white; text-decoration:none; border-radius:5px;">Hemen Katıl</a>
+<body>
+
+  <!-- Navbar -->
+<nav>
+  <a href="#home">Ana Sayfa</a>
+  <a href="#about">Hakkında</a>
+  <a href="#contact">İletişim</a>
+  <a href="#newsletter">Bülten</a>
+  <button id="theme-toggle">🌙</button>
+</nav>
+
+  <!-- Hero -->
+  <section id="home" class="hero">
+    <h1>Merhaba Dünya!</h1>
+    <p>Bu benim ilk web sayfam 🚀</p>
+  </section>
+
+  <!-- Hakkında -->
+  <section id="about" class="about">
+    <h2>Hakkında</h2>
+    <p>Bu proje, gelecekte dünyanın en büyük uygulamasının ilk adımı olacak.</p>
+  </section>
+
+  <!-- İletişim -->
+  <section id="contact" class="contact">
+    <h2>İletişim</h2>
+    <p>Bana e-posta gönderebilirsiniz: <a href="mailto:ornek@email.com">ornek@email.com</a></p>
+  </section>
+
+  <!-- Newsletter -->
+  <section id="newsletter" class="newsletter">
+    <h2>📩 Bültene Abone Ol</h2>
+    <p>Yeni özellikler, fırsatlar ve güncellemelerden haberdar olmak için kaydol!</p>
+    <form>
+      <input type="email" placeholder="E-posta adresinizi girin" required>
+      <button type="submit">Abone Ol</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 MyApp. Tüm hakları saklıdır.</p>
+  </footer>
+<script src="script.js"></script>
+
 </body>
 </html>

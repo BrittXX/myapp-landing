@@ -1,0 +1,197 @@
+/* Genel ayarlar */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  background: #f4f7fb;
+  color: #333;
+}
+
+/* Header */
+header {
+  background: #0078d7;
+  color: white;
+  padding: 60px 20px;
+}
+header h1 {
+  font-size: 3em;
+}
+header p {
+  margin: 20px 0;
+  font-size: 1.2em;
+}
+.btn {
+  display: inline-block;
+  background: white;
+  color: #0078d7;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+.btn:hover {
+  background: #f4f7fb;
+}
+
+/* Özellikler */
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 40px 20px;
+  flex-wrap: wrap;
+}
+.feature {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+/* About */
+.about {
+  padding: 50px 20px;
+  background: #eef3f9;
+}
+.about h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+/* Contact */
+.contact {
+  padding: 50px 20px;
+  background: #fff;
+}
+.contact h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+.contact a {
+  color: #0078d7;
+  text-decoration: none;
+  font-weight: bold;
+}
+.contact a:hover {
+  text-decoration: underline;
+}
+/* Newsletter */
+.newsletter {
+  padding: 50px 20px;
+  background: #f9f9f9;
+  text-align: center;
+}
+.newsletter h2 {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+.newsletter p {
+  margin-bottom: 20px;
+}
+.newsletter form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.newsletter input {
+  padding: 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.newsletter button {
+  padding: 10px 20px;
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.newsletter button:hover {
+  background: #005bb5;
+}
+/* Navbar */
+nav {
+  background: #0078d7;
+  padding: 15px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+nav a {
+  color: #fff;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+/* Tema Butonu */
+#theme-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2em;
+  cursor: pointer;
+  margin-left: 20px;
+}
+/* Dark Mode */
+.dark-mode {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+.dark-mode nav {
+  background: #333;
+}
+
+.dark-mode a {
+  color: #f1f1f1;
+}
+
+.dark-mode footer {
+  background: #222;
+}
+/* Buton hover animasyonu */
+button {
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: #005bb5;
+}
+/* Fade-in efekt */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero {
+  background: linear-gradient(135deg, #0078d7, #00b4d8);
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+}
+.hero h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+.hero p {
+  font-size: 1.5em;
+}
