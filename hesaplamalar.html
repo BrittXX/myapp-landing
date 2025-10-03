@@ -1,26 +1,276 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Hesaplamalar</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hesaplamalar - MyApp</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Hesaplamalar sayfası için küçük ek stiller */
+    .calc-wrap { max-width:1000px; margin:30px auto; padding:20px; }
+    .calc-header { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;}
+    .calc-select { padding:8px 10px; font-size:1em; }
+    .calc-card { background:#fff; border-radius:8px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+    .fields { display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; }
+    .field { flex:1 1 180px; min-width:150px; }
+    .field input, .field select { width:100%; padding:8px 10px; border-radius:6px; border:1px solid #ccc; font-size:1em; }
+    .btn-row { margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .btn { background:#ff7b00;color:#fff;padding:10px 16px;border-radius:6px;border:none;cursor:pointer;font-weight:600 }
+    .btn.secondary { background:#0078d7 }
+    #resultBox { margin-top:18px; padding:12px; border-radius:6px; background:#f4f7fb; font-weight:700;}
+    .history { margin-top:12px; max-height:200px; overflow:auto; padding:8px; border-left:3px solid #0078d7; background:#fff; }
+    .history-item { padding:8px; border-bottom:1px dashed #eee; font-size:0.95em; }
+    @media(max-width:600px){ .fields { flex-direction:column } .calc-header{flex-direction:column;align-items:flex-start} }
+  </style>
 </head>
 <body>
-  <section class="calculator">
-    <h2>Yüzde Hesaplama</h2>
-    <input type="number" id="number" placeholder="Sayı girin">
-    <input type="number" id="percent" placeholder="Yüzde girin">
-    <button onclick="calculate()">Hesapla</button>
-    <p id="result"></p>
-  </section>
+  <!-- Basit bir üst link -->
+  <div style="max-width:1100px;margin:14px auto;padding:0 16px;">
+    <a href="index.html" style="text-decoration:none;color:#0078d7;font-weight:700;">← Ana sayfaya dön</a>
+  </div>
 
-  <script>
-    function calculate() {
-      const number = document.getElementById("number").value;
-      const percent = document.getElementById("percent").value;
-      const result = (number * percent) / 100;
-      document.getElementById("result").innerText = percent + "% of " + number + " = " + result;
+  <div class="calc-wrap">
+    <div class="calc-header">
+      <h2>Hesaplamalar</h2>
+      <div>
+        <select id="calculatorSelect" class="calc-select"></select>
+      </div>
+    </div>
+
+    <div id="calcArea" class="calc-card">
+      <!-- Buraya dinamik form render edilecek -->
+    </div>
+  </div>
+
+<script>
+/* ---------------------------
+   Modüler calculator altyapısı
+   --------------------------- */
+
+/* helper: sayıyı güvenli al */
+function toNumber(v){
+  const n = parseFloat(v);
+  return isFinite(n) ? n : 0;
+}
+
+/* Format: rakamları hoş göster */
+function formatNumber(n){
+  if (typeof n !== 'number' || !isFinite(n)) return String(n);
+  return n.toLocaleString('tr-TR', { maximumFractionDigits: 6 });
+}
+
+/* calculators dizisine yeni hesaplayıcı ekle (kolayca genişletilir) */
+const calculators = [
+  {
+    id: 'percentage',
+    title: 'Yüzde Hesaplama (x sayının y%\'si)',
+    fields: [
+      { id:'value', label:'Sayı (x)', type:'number', placeholder:'Örn: 500' },
+      { id:'percent', label:'Yüzde (%)', type:'number', placeholder:'Örn: 10' }
+    ],
+    compute: ({value, percent}) => {
+      const x = toNumber(value), p = toNumber(percent);
+      const result = x * p / 100;
+      return `${p}% of ${formatNumber(x)} = ${formatNumber(result)}`;
     }
-  </script>
+  },
+  {
+    id: 'arithmetic',
+    title: 'Basit Aritmetik (2 sayı)',
+    fields: [
+      { id:'a', label:'Sayı A', type:'number', placeholder:'Örn: 12' },
+      { id:'operator', label:'Operatör', type:'select', options:[{v:'+',t:'+'},{v:'-',t:'-'},{v:'*',t:'×'},{v:'/',t:'÷'}] },
+      { id:'b', label:'Sayı B', type:'number', placeholder:'Örn: 3' }
+    ],
+    compute: ({a,operator,b}) => {
+      const x = toNumber(a), y = toNumber(b);
+      let res;
+      if(operator === '+') res = x + y;
+      else if(operator === '-') res = x - y;
+      else if(operator === '*') res = x * y;
+      else if(operator === '/'){
+        if (y === 0) return 'Hata: 0 ile bölme.';
+        res = x / y;
+      } else return 'Geçersiz operatör';
+      return `${formatNumber(x)} ${operator} ${formatNumber(y)} = ${formatNumber(res)}`;
+    }
+  },
+  {
+    id: 'vat',
+    title: 'KDV Hesaplama (ekle/çıkar)',
+    fields: [
+      { id:'amount', label:'Tutar', type:'number', placeholder:'Örn: 1000' },
+      { id:'rate', label:'KDV (%)', type:'number', placeholder:'Örn: 18' },
+      { id:'mode', label:'Mod', type:'select', options:[{v:'add',t:'KDV ekle (brüt)'},{v:'remove',t:'KDV çıkar (net)'}] }
+    ],
+    compute: ({amount, rate, mode}) => {
+      const a = toNumber(amount), r = toNumber(rate)/100;
+      if(mode === 'add'){
+        const gross = a * (1 + r);
+        const kdv = gross - a;
+        return `Net: ${formatNumber(a)} → KDV ${formatNumber(kdv)} → Brüt: ${formatNumber(gross)}`;
+      } else {
+        const net = a / (1 + r);
+        const kdv = a - net;
+        return `Brüt: ${formatNumber(a)} → KDV ${formatNumber(kdv)} → Net: ${formatNumber(net)}`;
+      }
+    }
+  },
+  {
+    id: 'compound',
+    title: 'Bileşik Faiz (Future Value)',
+    fields: [
+      { id:'principal', label:'Anapara (P)', type:'number', placeholder:'Örn: 10000' },
+      { id:'rate', label:'Yıllık Faiz (%)', type:'number', placeholder:'Örn: 5' },
+      { id:'times', label:'Yılda kaç kez bileşik?', type:'number', placeholder:'Örn: 12' },
+      { id:'years', label:'Yıl', type:'number', placeholder:'Örn: 3' }
+    ],
+    compute: ({principal, rate, times, years}) => {
+      const P = toNumber(principal);
+      const r = toNumber(rate)/100;
+      const n = Math.max(1, Math.floor(toNumber(times)));
+      const t = toNumber(years);
+      const A = P * Math.pow(1 + r/n, n*t);
+      return `Gelecek Değer: ${formatNumber(A)} (P=${formatNumber(P)}, r=${rate}%, n=${n}, t=${t})`;
+    }
+  },
+  {
+    id: 'loan',
+    title: 'Kredi - Aylık Ödeme (Monthly Payment)',
+    fields: [
+      { id:'principal', label:'Kredi Tutarı', type:'number', placeholder:'Örn: 100000' },
+      { id:'rate', label:'Yıllık Faiz (%)', type:'number', placeholder:'Örn: 12' },
+      { id:'years', label:'Vade (yıl)', type:'number', placeholder:'Örn: 5' }
+    ],
+    compute: ({principal, rate, years}) => {
+      const P = toNumber(principal);
+      const annual = toNumber(rate)/100;
+      const n = Math.max(1, Math.floor(toNumber(years))) * 12;
+      const r = annual/12;
+      if (r === 0) {
+        const pay = P / n;
+        return `Aylık ödeme: ${formatNumber(pay)} (faiz yok)`;
+      }
+      const pow = Math.pow(1+r, n);
+      const M = P * r * pow / (pow - 1);
+      return `Aylık ödeme: ${formatNumber(M)} (vade: ${n} ay)`;
+    }
+  }
+];
+
+/* render select ve form */
+const selectEl = document.getElementById('calculatorSelect');
+const calcArea = document.getElementById('calcArea');
+const historyStore = {}; // her calc için history
+
+function populateSelect(){
+  calculators.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.title;
+    selectEl.appendChild(opt);
+    historyStore[c.id] = [];
+  });
+}
+
+function renderCalculator(calcId){
+  const calc = calculators.find(c => c.id === calcId);
+  if(!calc) return;
+  calcArea.innerHTML = '';
+  const h = document.createElement('h3'); h.textContent = calc.title;
+  calcArea.appendChild(h);
+
+  const fieldsWrap = document.createElement('div');
+  fieldsWrap.className = 'fields';
+
+  calc.fields.forEach(f => {
+    const fdiv = document.createElement('div');
+    fdiv.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = f.label;
+    label.style.display = 'block';
+    label.style.fontWeight = '600';
+    label.style.marginBottom = '6px';
+    fdiv.appendChild(label);
+
+    if(f.type === 'select'){
+      const sel = document.createElement('select');
+      sel.name = f.id;
+      f.options.forEach(o => {
+        const op = document.createElement('option');
+        op.value = o.v;
+        op.textContent = o.t;
+        sel.appendChild(op);
+      });
+      fdiv.appendChild(sel);
+    } else {
+      const inp = document.createElement('input');
+      inp.type = f.type || 'text';
+      inp.name = f.id;
+      if(f.placeholder) inp.placeholder = f.placeholder;
+      fdiv.appendChild(inp);
+    }
+    fieldsWrap.appendChild(fdiv);
+  });
+
+  calcArea.appendChild(fieldsWrap);
+
+  const btnRow = document.createElement('div'); btnRow.className = 'btn-row';
+  const calcBtn = document.createElement('button'); calcBtn.className = 'btn'; calcBtn.textContent = 'Hesapla';
+  const clearBtn = document.createElement('button'); clearBtn.className = 'btn secondary'; clearBtn.textContent = 'Temizle';
+  btnRow.appendChild(calcBtn); btnRow.appendChild(clearBtn);
+  calcArea.appendChild(btnRow);
+
+  const resultBox = document.createElement('div'); resultBox.id = 'resultBox'; resultBox.textContent = 'Sonuç burada görünecek.';
+  calcArea.appendChild(resultBox);
+
+  const histWrap = document.createElement('div'); histWrap.className = 'history'; calcArea.appendChild(histWrap);
+
+  calcBtn.addEventListener('click', () => {
+    // alanları oku
+    const inputs = {};
+    calc.fields.forEach(f => {
+      const el = calcArea.querySelector(`[name="${f.id}"]`);
+      inputs[f.id] = el ? el.value : '';
+    });
+    // hesapla
+    try {
+      const out = calc.compute(inputs);
+      resultBox.textContent = out;
+      // history
+      const time = new Date().toLocaleString();
+      historyStore[calc.id].unshift({time, text: out});
+      // render history (sade)
+      histWrap.innerHTML = '';
+      historyStore[calc.id].slice(0,20).forEach(h => {
+        const item = document.createElement('div'); item.className = 'history-item';
+        item.textContent = `${h.time} — ${h.text}`;
+        histWrap.appendChild(item);
+      });
+    } catch(e) {
+      resultBox.textContent = 'Hesaplama sırasında hata: ' + e.message;
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    calc.fields.forEach(f => {
+      const el = calcArea.querySelector(`[name="${f.id}"]`);
+      if (el) el.value = '';
+    });
+    resultBox.textContent = 'Sonuç burada görünecek.';
+  });
+}
+
+/* başlat */
+document.addEventListener('DOMContentLoaded', () => {
+  populateSelect();
+  selectEl.addEventListener('change', (e) => renderCalculator(e.target.value));
+  // ilkini seç
+  if(calculators.length) {
+    selectEl.value = calculators[0].id;
+    renderCalculator(calculators[0].id);
+  }
+});
+</script>
 </body>
 </html>
