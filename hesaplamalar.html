@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Hesaplamalar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section class="calculator">
+    <h2>Yüzde Hesaplama</h2>
+    <input type="number" id="number" placeholder="Sayı girin">
+    <input type="number" id="percent" placeholder="Yüzde girin">
+    <button onclick="calculate()">Hesapla</button>
+    <p id="result"></p>
+  </section>
+
+  <script>
+    function calculate() {
+      const number = document.getElementById("number").value;
+      const percent = document.getElementById("percent").value;
+      const result = (number * percent) / 100;
+      document.getElementById("result").innerText = percent + "% of " + number + " = " + result;
+    }
+  </script>
+</body>
+</html>

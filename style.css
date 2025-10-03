@@ -350,3 +350,32 @@ section.visible {
 .contact button:hover {
   background: #e06900;
 }
+.calculator {
+  text-align: center;
+  margin: 50px auto;
+}
+
+.calculator input {
+  padding: 10px;
+  margin: 10px;
+  font-size: 1em;
+}
+
+.calculator button {
+  padding: 10px 20px;
+  background: #ff7b00;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.calculator button:hover {
+  background: #e06900;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
