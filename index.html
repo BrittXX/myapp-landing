@@ -58,6 +58,16 @@
   </form>
 </section>
 
+<script src="calculators.js"></script>
+<section id="hesaplamalar">
+  <h2>Kredi Hesaplama</h2>
+  <label>Tutar (₺): <input id="loanAmount" type="number"></label><br>
+  <label>Vade (Ay): <input id="loanMonths" type="number"></label><br>
+  <label>Faiz Oranı (%): <input id="loanRate" type="number"></label><br>
+  <button onclick="calculateLoan()">Hesapla</button>
+  <p id="loanResult"></p>
+</section>
+
 
   <!-- Footer -->
   <footer>
