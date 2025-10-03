@@ -48,6 +48,24 @@
     </form>
   </section>
 
+  <section id="hesaplamalar">
+  <h2>Hesaplamalar</h2>
+  <p>İhtiyacın olan hesaplama aracını seç ve hemen kullan!</p>
+
+  <div class="calculator-container">
+    <!-- Hesap makineleri buraya eklenecek -->
+    <div class="calculator">
+  <h3>Kredi Hesaplama</h3>
+  <label>Tutar (₺): <input id="loanAmount" type="number"></label><br>
+  <label>Vade (Ay): <input id="loanMonths" type="number"></label><br>
+  <label>Faiz Oranı (%): <input id="loanRate" type="number"></label><br>
+  <button onclick="calculateLoan()">Hesapla</button>
+  <p id="loanResult"></p>
+</div>
+
+  </div>
+</section>
+
 <!-- Contact -->
 <section id="contact" class="contact">
   <h2>İletişim</h2>
